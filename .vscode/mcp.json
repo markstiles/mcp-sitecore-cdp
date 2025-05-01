@@ -1,0 +1,20 @@
+{
+    "servers": {
+        "sitecore-cdp-server": {
+            "command": "npm start",
+            "rootUri": "http://localhost:3000",
+            "transport": "stdio",
+            "metadata": {
+                "description": "Sitecore CDP API Model Context Protocol Server",
+                "features": {
+                    "chat": true,
+                    "streaming": true
+                }
+            }
+        },
+        "my-mcp-server-9f1fe055": {
+            "type": "sse",
+            "url": "http://localhost:3000"
+        }
+    }
+}
