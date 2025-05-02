@@ -4,7 +4,6 @@ const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
 const CdpGuestService_1 = require("./services/CdpGuestService");
 const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
-const GuestTools_1 = require("./tools/GuestTools");
 class CdpServer {
     server;
     guestService;
@@ -18,6 +17,115 @@ class CdpServer {
         'RetrieveGuestDataExtensions',
         'UpdateGuestDataExtension',
         'DeleteGuestDataExtension'
+    ];
+    toolsList = [
+        {
+            name: "CreateGuest",
+            description: "Creates a guest.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    requestBody: { type: "object" },
+                },
+                required: ["requestBody"],
+            },
+        },
+        {
+            name: "RetrieveGuests",
+            description: "Retrieves guests by their email address or other identifying information.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    offset: { type: "string" },
+                    limit: { type: "string" },
+                    expand: { type: "string" },
+                    sort: { type: "string" },
+                },
+            },
+        },
+        {
+            name: "RetrieveGuest",
+            description: "Retrieves the full guest record of a guest, including any guest data extensions.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                    expand: { type: "array" },
+                },
+                required: ["guestRef"],
+            },
+        },
+        {
+            name: "UpdateGuest",
+            description: "Fully updates a guest, replacing the entire resource.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                    requestBody: { type: "object" },
+                },
+                required: ["guestRef", "requestBody"],
+            },
+        },
+        {
+            name: "DeleteGuest",
+            description: "Deletes a guest record and all associated entities.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                },
+                required: ["guestRef"],
+            },
+        },
+        {
+            name: "CreateGuestDataExtension",
+            description: "Creates a guest data extension.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                    extension: { type: "object" },
+                },
+                required: ["guestRef", "extension"],
+            },
+        },
+        {
+            name: "RetrieveGuestDataExtensions",
+            description: "Retrieves all guest data extensions for a guest.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                },
+                required: ["guestRef"],
+            },
+        },
+        {
+            name: "UpdateGuestDataExtension",
+            description: "Updates a specific guest data extension.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                    dataExtensionName: { type: "string" },
+                    extension: { type: "object" },
+                },
+                required: ["guestRef", "dataExtensionName", "extension"],
+            },
+        },
+        {
+            name: "DeleteGuestDataExtension",
+            description: "Deletes a specific guest data extension.",
+            inputSchema: {
+                type: "object",
+                properties: {
+                    guestRef: { type: "string" },
+                    dataExtensionName: { type: "string" },
+                },
+                required: ["guestRef", "dataExtensionName"],
+            },
+        },
     ];
     constructor() {
         console.error('[Setup] Initializing CDP MCP server...');
@@ -40,7 +148,7 @@ class CdpServer {
     }
     setupListHandler() {
         this.server.setRequestHandler(types_js_1.ListToolsRequestSchema, async () => ({
-            tools: GuestTools_1.GuestTools,
+            tools: this.toolsList,
         }));
     }
     setupCallHandler() {
@@ -50,32 +158,50 @@ class CdpServer {
                     throw new types_js_1.McpError(types_js_1.ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
                 }
                 var responseData = null;
+                const args = request.params.arguments;
                 if (request.params.name === 'CreateGuest') {
-                    responseData = await this.guestService.createGuest(request);
+                    const guest = args;
+                    responseData = await this.guestService.createGuest(guest);
                 }
                 else if (request.params.name === 'RetrieveGuests') {
-                    responseData = await this.guestService.retrieveGuests(request);
+                    //if (!request.params.arguments) {
+                    //  throw new McpError(ErrorCode.InvalidParams, 'Arguments are required for RetrieveGuests.');
+                    //}
+                    const queryParams = args;
+                    responseData = await this.guestService.retrieveGuests(queryParams);
                 }
                 else if (request.params.name === 'RetrieveGuest') {
-                    responseData = await this.guestService.retrieveGuest(request);
+                    const guestRef = args.guestRef;
+                    responseData = await this.guestService.retrieveGuest(guestRef);
                 }
                 else if (request.params.name === 'UpdateGuest') {
-                    responseData = await this.guestService.updateGuest(request);
+                    const guestRef = args.guestRef;
+                    const guest = args;
+                    responseData = await this.guestService.updateGuest(guestRef, guest);
                 }
                 else if (request.params.name === 'DeleteGuest') {
-                    responseData = await this.guestService.deleteGuest(request);
+                    const guestRef = args.guestRef;
+                    responseData = await this.guestService.deleteGuest(guestRef);
                 }
                 else if (request.params.name === 'CreateGuestDataExtension') {
-                    responseData = await this.guestService.createGuestDataExtension(request);
+                    const guestRef = args.guestRef;
+                    const extension = JSON.parse(args.extension);
+                    responseData = await this.guestService.createGuestDataExtension(guestRef, extension);
                 }
                 else if (request.params.name === 'RetrieveGuestDataExtensions') {
-                    responseData = await this.guestService.retrieveGuestDataExtensions(request);
+                    const guestRef = args.guestRef;
+                    responseData = await this.guestService.retrieveGuestDataExtensions(guestRef);
                 }
                 else if (request.params.name === 'UpdateGuestDataExtension') {
-                    responseData = await this.guestService.updateGuestDataExtension(request);
+                    const guestRef = args.guestRef;
+                    const dataExtensionName = args.dataExtensionName;
+                    const extension = JSON.parse(args.extension);
+                    responseData = await this.guestService.updateGuestDataExtension(guestRef, dataExtensionName, extension);
                 }
                 else if (request.params.name === 'DeleteGuestDataExtension') {
-                    responseData = await this.guestService.deleteGuestDataExtension(request);
+                    const guestRef = args.guestRef;
+                    const dataExtensionName = args.dataExtensionName;
+                    responseData = await this.guestService.deleteGuestDataExtension(guestRef, dataExtensionName);
                 }
                 return { content: [{ type: 'text', text: JSON.stringify(responseData) }] };
             }

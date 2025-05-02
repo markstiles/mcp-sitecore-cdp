@@ -8,67 +8,39 @@ class CdpGuestService {
         this.client = new CdpClient_1.CdpClient();
     }
     // Guest Endpoints
-    async createGuest(request) {
-        const guest = request.params.arguments;
+    async createGuest(guest) {
         const response = await this.client.MakeRequest('/v2.1/guests', 'POST', guest);
         return response.data;
     }
-    async retrieveGuests(request) {
-        const queryParams = JSON.parse(request.params.arguments);
+    async retrieveGuests(queryParams) {
         const response = await this.client.MakeRequest('/v2.1/guests', 'GET', { params: queryParams });
         return response.data;
     }
-    async retrieveGuest(request) {
-        const guestRef = request.params.arguments;
+    async retrieveGuest(guestRef) {
         const response = await this.client.MakeRequest(`/v2.1/guests/${guestRef}`, 'GET', null);
         return response.data;
     }
-    async updateGuest(request) {
-        const guestRef = request.params.arguments;
-        const guest = request.params.arguments;
+    async updateGuest(guestRef, guest) {
         const response = await this.client.MakeRequest(`/v2.1/guests/${guestRef}`, 'PUT', guest);
         return response.data;
     }
-    async deleteGuest(request) {
-        const guestRef = request.params.arguments;
+    async deleteGuest(guestRef) {
         await this.client.MakeRequest(`/v2.1/guests/${guestRef}`, 'DELETE', null);
     }
     // Guest Data Extension Endpoints
-    async createGuestDataExtension(request) {
-        const guestRef = request.params.arguments;
-        const extension = JSON.parse(request.params.arguments);
+    async createGuestDataExtension(guestRef, extension) {
         const response = await this.client.MakeRequest(`/v2.1/guests/${guestRef}/extensions`, 'POST', extension);
         return response.data;
     }
-    async retrieveGuestDataExtensions(request) {
-        const guestRef = request.params.arguments;
+    async retrieveGuestDataExtensions(guestRef) {
         const response = await this.client.MakeRequest(`/v2.1/guests/${guestRef}/extensions`, 'GET', null);
         return response.data;
     }
-    async updateGuestDataExtension(request) {
-        const guestRef = request.params.arguments;
-        const dataExtensionName = request.params.arguments;
-        const extension = JSON.parse(request.params.arguments);
+    async updateGuestDataExtension(guestRef, dataExtensionName, extension) {
         const response = await this.client.MakeRequest(`/v2.1/guests/${guestRef}/extensions/${dataExtensionName}`, 'PUT', extension);
         return response.data;
     }
-    async deleteGuestDataExtension(request) {
-        /*
-        const args = request.params.arguments as {
-            instrument: string;
-            bar?: string;
-            limit?: number;
-        }
-    
-        if (!args.instrument) {
-            throw new McpError(
-            ErrorCode.InvalidParams,
-            'Missing required parameter: instrument'
-            );
-        }
-        */
-        const guestRef = request.params.arguments;
-        const dataExtensionName = request.params.arguments;
+    async deleteGuestDataExtension(guestRef, dataExtensionName) {
         await this.client.MakeRequest(`/v2.1/guests/${guestRef}/extensions/${dataExtensionName}`, 'DELETE', null);
     }
 }
