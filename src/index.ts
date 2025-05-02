@@ -2,6 +2,7 @@ import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CdpGuestService } from './services/CdpGuestService';
 import * as Models from './models/Guest';
+import { GuestTools, GuestToolActions } from './tools/GuestTools';
 import {
     CallToolRequestSchema,
     ErrorCode,
@@ -12,126 +13,8 @@ import {
 class CdpServer {
     private server: Server;
     private guestService: CdpGuestService;
-    private actionList = [
-        'CreateGuest', 
-        'RetrieveGuests', 
-        'RetrieveGuest', 
-        'UpdateGuest', 
-        'DeleteGuest', 
-        'CreateGuestDataExtension', 
-        'RetrieveGuestDataExtensions', 
-        'UpdateGuestDataExtension', 
-        'DeleteGuestDataExtension'
-    ];
-    private toolsList = [
-      {
-        name: "CreateGuest",
-        description: "Creates a guest.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            requestBody: { type: "object" },
-          },
-          required: ["requestBody"],
-        },
-      },
-      {
-        name: "RetrieveGuests",
-        description: "Retrieves guests by their email address or other identifying information.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            offset: { type: "string" },
-            limit: { type: "string" },
-            expand: { type: "string" },
-            sort: { type: "string" },
-          },
-        },
-      },
-      {
-        name: "RetrieveGuest",
-        description: "Retrieves the full guest record of a guest, including any guest data extensions.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            guestRef: { type: "string" },
-            expand: { type: "array", items: { type: "string" } },
-          },
-          required: ["guestRef"],
-        },
-      },
-      {
-        name: "UpdateGuest",
-        description: "Fully updates a guest, replacing the entire resource.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            guestRef: { type: "string" },
-            requestBody: { type: "object" },
-          },
-          required: ["guestRef", "requestBody"],
-        },
-      },
-      {
-        name: "DeleteGuest",
-        description: "Deletes a guest record and all associated entities.",
-        inputSchema: {
-          type: "object",
-          properties: {
-            guestRef: { type: "string" },
-          },
-          required: ["guestRef"],
-        },
-      },
-      {
-          name: "CreateGuestDataExtension",
-          description: "Creates a guest data extension.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              guestRef: { type: "string" },
-              extension: { type: "object" },
-            },
-            required: ["guestRef", "extension"],
-          },
-        },
-        {
-          name: "RetrieveGuestDataExtensions",
-          description: "Retrieves all guest data extensions for a guest.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              guestRef: { type: "string" },
-            },
-            required: ["guestRef"],
-          },
-        },
-        {
-          name: "UpdateGuestDataExtension",
-          description: "Updates a specific guest data extension.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              guestRef: { type: "string" },
-              dataExtensionName: { type: "string" },
-              extension: { type: "object" },
-            },
-            required: ["guestRef", "dataExtensionName", "extension"],
-          },
-        },
-        {
-          name: "DeleteGuestDataExtension",
-          description: "Deletes a specific guest data extension.",
-          inputSchema: {
-            type: "object",
-            properties: {
-              guestRef: { type: "string" },
-              dataExtensionName: { type: "string" },
-            },
-            required: ["guestRef", "dataExtensionName"],
-          },
-        },
-    ];
+    private actionList: any[];
+    private toolsList: any[]; 
 
     constructor() {
       console.error('[Setup] Initializing CDP MCP server...');
@@ -147,13 +30,14 @@ class CdpServer {
           },
         }
       );
+      this.server.onerror = (error) => console.error('[Error]', error);
+
+      this.toolsList = GuestTools;
+      this.actionList = GuestToolActions;
+      this.guestService = new CdpGuestService();
       
       this.setupListHandler();
       this.setupCallHandler();
-
-      this.guestService = new CdpGuestService();
-  
-      this.server.onerror = (error) => console.error('[Error]', error);
 
       process.on('SIGINT', async () => {
         await this.server.close();
@@ -174,6 +58,8 @@ class CdpServer {
               throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
             }
             
+            console.log('[Success] Tool started successfully:', request.params.name);
+
             var responseData: any = null;
             const args = request.params.arguments as Record<string, string>;
 
@@ -230,7 +116,7 @@ class CdpServer {
               const dataExtensionName = args.dataExtensionName as string;
               responseData = await this.guestService.deleteGuestDataExtension(guestRef, dataExtensionName);
             }
-
+            console.log('[Success] Tool executed successfully:', responseData);
             return { content: [{ type: 'text', text: JSON.stringify(responseData) }] };
           } catch (error: unknown) {
             if (error instanceof Error) {

@@ -1,6 +1,17 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GuestTools = void 0;
+exports.GuestTools = exports.GuestToolActions = void 0;
+exports.GuestToolActions = [
+    'CreateGuest',
+    'RetrieveGuests',
+    'RetrieveGuest',
+    'UpdateGuest',
+    'DeleteGuest',
+    'CreateGuestDataExtension',
+    'RetrieveGuestDataExtensions',
+    'UpdateGuestDataExtension',
+    'DeleteGuestDataExtension'
+];
 exports.GuestTools = [
     {
         name: "CreateGuest",
@@ -8,10 +19,7 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                requestBody: {
-                    type: "object",
-                    schemaRef: "#/components/schemas/GuestCreate",
-                },
+                requestBody: { type: "object" },
             },
             required: ["requestBody"],
         },
@@ -22,25 +30,10 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                offset: {
-                    type: "string",
-                    schemaRef: "#/components/schemas/Offset",
-                    default: "0",
-                },
-                limit: {
-                    type: "string",
-                    schemaRef: "#/components/schemas/Limit",
-                    default: "10",
-                },
-                expand: {
-                    type: "string",
-                    schemaRef: "#/components/schemas/Expand",
-                    default: "false",
-                },
-                sort: {
-                    type: "string",
-                    description: "Sort results by specified criteria.",
-                },
+                offset: { type: "number" },
+                limit: { type: "number" },
+                expand: { type: "boolean" },
+                sort: { type: "string" },
             },
         },
     },
@@ -50,14 +43,8 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
-                expand: {
-                    type: "array",
-                    description: "Expand items in a collection.",
-                },
+                guestRef: { type: "string" },
+                expand: { type: "array", items: { type: "string" } },
             },
             required: ["guestRef"],
         },
@@ -68,14 +55,8 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
-                requestBody: {
-                    type: "object",
-                    schemaRef: "#/components/schemas/GuestUpdateRequest",
-                },
+                guestRef: { type: "string" },
+                requestBody: { type: "object" },
             },
             required: ["guestRef", "requestBody"],
         },
@@ -86,10 +67,7 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
+                guestRef: { type: "string" },
             },
             required: ["guestRef"],
         },
@@ -100,14 +78,8 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
-                extension: {
-                    type: "object",
-                    schemaRef: "#/components/schemas/GuestDataExtension",
-                },
+                guestRef: { type: "string" },
+                extension: { type: "object" },
             },
             required: ["guestRef", "extension"],
         },
@@ -118,10 +90,7 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
+                guestRef: { type: "string" },
             },
             required: ["guestRef"],
         },
@@ -132,18 +101,9 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
-                dataExtensionName: {
-                    type: "string",
-                    description: "The name of the data extension.",
-                },
-                extension: {
-                    type: "object",
-                    schemaRef: "#/components/schemas/GuestDataExtension",
-                },
+                guestRef: { type: "string" },
+                dataExtensionName: { type: "string" },
+                extension: { type: "object" },
             },
             required: ["guestRef", "dataExtensionName", "extension"],
         },
@@ -154,14 +114,8 @@ exports.GuestTools = [
         inputSchema: {
             type: "object",
             properties: {
-                guestRef: {
-                    type: "string",
-                    description: "The guest reference.",
-                },
-                dataExtensionName: {
-                    type: "string",
-                    description: "The name of the data extension.",
-                },
+                guestRef: { type: "string" },
+                dataExtensionName: { type: "string" },
             },
             required: ["guestRef", "dataExtensionName"],
         },
