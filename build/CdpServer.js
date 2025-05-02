@@ -50,7 +50,7 @@ class CdpServer {
                 type: "object",
                 properties: {
                     guestRef: { type: "string" },
-                    expand: { type: "array" },
+                    expand: { type: "array", items: { type: "string" } },
                 },
                 required: ["guestRef"],
             },
