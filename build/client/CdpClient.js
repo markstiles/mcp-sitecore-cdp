@@ -1,0 +1,29 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.CdpClient = void 0;
+const config_1 = require("../config/config");
+class CdpClient {
+    headers;
+    constructor() {
+        this.headers = new Headers();
+        this.headers.append("Content-Type", "application/json");
+        this.headers.append("Authorization", `Basic ${btoa(`${config_1.config.cdpClientKey}:${config_1.config.cdpApiToken}`)}`);
+    }
+    async MakeRequest(url, method, body) {
+        try {
+            const response = await fetch(config_1.config.cdpEndpointUrl + url, {
+                method: method,
+                headers: this.headers,
+                body: body
+            });
+            //console.log("Response:");
+            //console.log(response);
+            return response;
+        }
+        catch (error) {
+            console.log(error);
+            return { ok: false, error: error || 'Unknown error' };
+        }
+    }
+}
+exports.CdpClient = CdpClient;

@@ -1,47 +1,36 @@
-import axios from 'axios';
-import { GuestModel } from '../models/guestModel';
 import { config } from '../config/config';
 
-export class CdpService {
-    private apiUrl: string;
+export class CdpClient {
+   
+    private headers: any;
 
     constructor() {
-        this.apiUrl = config.cdpEndpointUrl;
+        
+        this.headers = new Headers();
+        this.headers.append("Content-Type", "application/json");
+        this.headers.append("Authorization", `Basic ${btoa(`${config.cdpClientKey}:${config.cdpApiToken}`)}`);
     }
-
-    public async fetchGuestData(guestId: string): Promise<GuestModel | null> {
+    
+    public async MakeRequest<T>(url: string, method: string, body: any): Promise<any> 
+    {       
         try {
-            const response = await axios.get(`${this.apiUrl}/guests/${guestId}`, {
-                headers: {
-                    'Authorization': `Bearer ${config.cdpClientKey}`
-                }
-            });``
-            const { id, name, email, createdAt } = response.data;
-            return new GuestModel(id, name, email, new Date(createdAt));
-        } catch (error) {
-            console.error('Error fetching guest data:', error);
-            return null;
-        }
-    }
-
-    public async sendGuestData(guest: GuestModel): Promise<boolean> {
-        try {
-            await axios.post(`${this.apiUrl}/guests`, guest, {
-                headers: {
-                    'Authorization': `Bearer ${config.cdpClientKey}`,
-                }
+            const response = await fetch(config.cdpEndpointUrl + url, {
+              method: method,
+              headers: this.headers,
+              body: body
             });
-            return true;
-        } catch (error) {
-            console.error('Error sending guest data:', error);
-            return false;
-        }
+        
+            //console.log("Response:");
+            //console.log(response);
+        
+            return response as T;
+          } catch (error) {
+            console.log(error);
+            return { ok: false, error: error || 'Unknown error' };
+          }
     }
-
-    /**
-     * Process a request from MCP protocol and return a response
-     * This method analyzes the input text and determines which CDP API operation to execute
-     */
+  
+    /*
     public async processRequest(text: string): Promise<string> {
         try {
             // Parse the request to determine what operation is requested
@@ -67,11 +56,11 @@ export class CdpService {
             } else {
                 // Provide help for using the service
                 return `
-Sitecore CDP API Service - Available commands:
-- Get guest data: "Get guest with ID [guest_id]"
-- Create guest: "Create guest with [guest_details_json]"
-For more information about the Sitecore CDP API, see https://api-docs.sitecore.com/cdp/guest-rest-api
-`;
+                    Sitecore CDP API Service - Available commands:
+                    - Get guest data: "Get guest with ID [guest_id]"
+                    - Create guest: "Create guest with [guest_details_json]"
+                    For more information about the Sitecore CDP API, see https://api-docs.sitecore.com/cdp/guest-rest-api
+                `;
             }
         } catch (error) {
             console.error('Error processing request:', error);
@@ -85,8 +74,5 @@ For more information about the Sitecore CDP API, see https://api-docs.sitecore.c
             return requestParts[idIndex];
         }
         return null;
-    }
+    }*/
 }
-
-// Export an instance of the service
-export const cdpService = new CdpService();
