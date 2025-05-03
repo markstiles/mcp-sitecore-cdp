@@ -19,12 +19,17 @@ class CdpGuestService {
         const response = await this.client.MakeRequest(`guests?offset=${offset}&limit=${limit}&expand=${expand}${sort}`, 'GET', null);
         return await response.json();
     }
-    async retrieveGuest(guestRef) {
-        const response = await this.client.MakeRequest(`guests/${guestRef}`, 'GET', null);
+    async retrieveGuest(guestRef, expand) {
+        const query = new URLSearchParams({ expand: String(expand) }).toString();
+        const response = await this.client.MakeRequest(`guests/${guestRef}?${query}`, 'GET', null);
         return await response.json();
     }
     async updateGuest(guestRef, guest) {
         const response = await this.client.MakeRequest(`guests/${guestRef}`, 'PUT', guest);
+        return await response.json();
+    }
+    async partialUpdateGuest(guestRef, guest) {
+        const response = await this.client.MakeRequest(`guests/${guestRef}`, 'PATCH', guest);
         return await response.json();
     }
     async deleteGuest(guestRef) {

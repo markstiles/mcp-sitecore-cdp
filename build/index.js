@@ -53,6 +53,7 @@ class CdpServer {
                     //if (!request.params.arguments) {
                     //  throw new McpError(ErrorCode.InvalidParams, 'Arguments are required for RetrieveGuests.');
                     //}
+                    // TODO go through each populated argument and add to the query string
                     const offset = args.offset ? parseInt(args.offset, 10) ?? 0 : 0;
                     const limit = args.limit ? parseInt(args.limit, 10) ?? 10 : 10;
                     const expand = args.expand ? (args.expand === 'true') : false;
@@ -61,12 +62,18 @@ class CdpServer {
                 }
                 else if (request.params.name === 'RetrieveGuest') {
                     const guestRef = args.guestRef;
-                    responseData = await this.guestService.retrieveGuest(guestRef);
+                    const expand = args.expand ? (args.expand === 'true') : false;
+                    responseData = await this.guestService.retrieveGuest(guestRef, expand);
                 }
                 else if (request.params.name === 'UpdateGuest') {
                     const guestRef = args.guestRef;
                     const guest = args;
                     responseData = await this.guestService.updateGuest(guestRef, guest);
+                }
+                else if (request.params.name === 'PartialUpdateGuest') {
+                    const guestRef = args.guestRef;
+                    const guest = args;
+                    responseData = await this.guestService.partialUpdateGuest(guestRef, guest);
                 }
                 else if (request.params.name === 'DeleteGuest') {
                     const guestRef = args.guestRef;

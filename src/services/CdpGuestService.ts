@@ -31,10 +31,11 @@ export class CdpGuestService {
     return await response.json();
   }
 
-  async retrieveGuest(guestRef: string): Promise<Models.GuestCreateResponse> 
+  async retrieveGuest(guestRef: string, expand: boolean): Promise<Models.GuestCreateResponse> 
   {
+    const query = new URLSearchParams({expand: String(expand)}).toString();
     const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
-        `guests/${guestRef}`,
+        `guests/${guestRef}?${query}`,
         'GET',
         null);
     
@@ -46,6 +47,16 @@ export class CdpGuestService {
     const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
         `guests/${guestRef}`, 
         'PUT',
+        guest);
+    
+    return await response.json();
+  }
+
+  async partialUpdateGuest(guestRef: string,  guest: Partial<Models.Guest>): Promise<Models.GuestCreateResponse> 
+  {
+    const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
+        `guests/${guestRef}`, 
+        'PATCH',
         guest);
     
     return await response.json();

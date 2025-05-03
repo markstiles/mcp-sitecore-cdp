@@ -5,7 +5,7 @@ export interface Guest {
     email?: string;
     emails?: string[];
     firstName?: string;
-    gender?: 'male' | 'female' | 'unknown';
+    gender?: string;
     guestType: 'visitor' | 'customer' | 'traveller';
     lastName?: string;
     nationality?: string;
