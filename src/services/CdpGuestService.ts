@@ -1,6 +1,5 @@
 import { CdpClient } from '../client/CdpClient';
 import * as Models from '../models/Guest';
-import express, { Router, Request, Response } from 'express';
 
 export class CdpGuestService {
   private client: CdpClient;
@@ -13,44 +12,46 @@ export class CdpGuestService {
   async createGuest(guest: Partial<Models.Guest>): Promise<Models.GuestCreateResponse> 
   {
     const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
-        '/v2.1/guests', 
+        'guests', 
         'POST', 
         guest);
     return response.data;
   }
 
-  async retrieveGuests(queryParams: Record<string, string>): Promise<Models.RetrieveGuestsResponse> 
-  {    
+  async retrieveGuests(offset: number, limit: number, expand: boolean, sort: string): Promise<Models.RetrieveGuestsResponse> 
+  { 
     const response = await this.client.MakeRequest<Models.RetrieveGuestsResponse>(
-        '/v2.1/guests', 
-        'GET',
-        { params: queryParams }
-    );
-    return response.data;
+      //`guests?offset=${offset}&limit=${limit}&expand=${expand}&sort=${sort}`, 
+      `guests?offset=${offset}&limit=${limit}&expand=${expand}`, 
+      'GET', null);
+
+    return await response.json();
   }
 
   async retrieveGuest(guestRef: string): Promise<Models.GuestCreateResponse> 
   {
     const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
-        `/v2.1/guests/${guestRef}`,
+        `guests/${guestRef}`,
         'GET',
         null);
-    return response.data;
+    
+    return await response.json();
   }
 
   async updateGuest(guestRef: string,  guest: Partial<Models.Guest>): Promise<Models.GuestCreateResponse> 
   {
     const response = await this.client.MakeRequest<Models.GuestCreateResponse>(
-        `/v2.1/guests/${guestRef}`, 
+        `guests/${guestRef}`, 
         'PUT',
         guest);
-    return response.data;
+    
+    return await response.json();
   }
 
   async deleteGuest(guestRef: string): Promise<void> 
   {
     await this.client.MakeRequest(
-        `/v2.1/guests/${guestRef}`,
+        `guests/${guestRef}`,
         'DELETE',
         null);
   }
@@ -59,19 +60,21 @@ export class CdpGuestService {
   async createGuestDataExtension(guestRef: string, extension: Partial<Models.GuestDataExtension>): Promise<Models.GuestDataExtensionResponse> 
   {
     const response = await this.client.MakeRequest<Models.GuestDataExtensionResponse>(
-        `/v2.1/guests/${guestRef}/extensions`, 
+        `guests/${guestRef}/extensions`, 
         'POST',
         extension);
-    return response.data;
+    
+    return await response.json();
   }
 
   async retrieveGuestDataExtensions(guestRef: string): Promise<Models.GuestDataExtensionResponse[]> 
   {
     const response = await this.client.MakeRequest<Models.GuestDataExtensionResponse[]>(
-        `/v2.1/guests/${guestRef}/extensions`,
+        `guests/${guestRef}/extensions`,
         'GET',
         null);
-    return response.data;
+    
+    return await response.json();
   }
 
   async updateGuestDataExtension(
@@ -81,17 +84,18 @@ export class CdpGuestService {
   ): Promise<Models.GuestDataExtensionResponse> 
   {
     const response = await this.client.MakeRequest<Models.GuestDataExtensionResponse>(
-      `/v2.1/guests/${guestRef}/extensions/${dataExtensionName}`,
+      `guests/${guestRef}/extensions/${dataExtensionName}`,
       'PUT',
       extension
     );
-    return response.data;
+    
+    return await response.json();
   }
 
   async deleteGuestDataExtension(guestRef: string, dataExtensionName: string): Promise<void> 
   {
     await this.client.MakeRequest(
-        `/v2.1/guests/${guestRef}/extensions/${dataExtensionName}`,
+        `guests/${guestRef}/extensions/${dataExtensionName}`,
         'DELETE',
         null
     );

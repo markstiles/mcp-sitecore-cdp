@@ -3,18 +3,18 @@ import { config } from '../config/config';
 export class CdpClient {
    
     private headers: any;
+    private baseUrl: string = config.cdpEndpointUrl;
 
     constructor() {
         
         this.headers = new Headers();
-        this.headers.append("Content-Type", "application/json");
         this.headers.append("Authorization", `Basic ${btoa(`${config.cdpClientKey}:${config.cdpApiToken}`)}`);
     }
     
     public async MakeRequest<T>(url: string, method: string, body: any): Promise<any> 
     {       
         try {
-            const response = await fetch(config.cdpEndpointUrl + url, {
+            const response = await fetch(this.baseUrl + url, {
               method: method,
               headers: this.headers,
               body: body

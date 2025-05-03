@@ -53,8 +53,11 @@ class CdpServer {
                     //if (!request.params.arguments) {
                     //  throw new McpError(ErrorCode.InvalidParams, 'Arguments are required for RetrieveGuests.');
                     //}
-                    const queryParams = args;
-                    responseData = await this.guestService.retrieveGuests(queryParams);
+                    const offset = args.offset ? parseInt(args.offset, 10) ?? 0 : 0;
+                    const limit = args.limit ? parseInt(args.limit, 10) ?? 10 : 10;
+                    const expand = args.expand ? (args.expand === 'true') : false;
+                    const sort = args.sort ?? '';
+                    responseData = await this.guestService.retrieveGuests(offset, limit, expand, sort);
                 }
                 else if (request.params.name === 'RetrieveGuest') {
                     const guestRef = args.guestRef;
