@@ -42,7 +42,7 @@ class CdpServer {
                 if (!this.actionList.includes(request.params.name)) {
                     throw new types_js_1.McpError(types_js_1.ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
                 }
-                console.log('[Success] Tool started successfully:', request.params.name);
+                console.info('[Success] Tool started successfully:', request.params.name);
                 var responseData = null;
                 const args = request.params.arguments;
                 if (request.params.name === 'CreateGuest') {
@@ -92,7 +92,7 @@ class CdpServer {
                     const dataExtensionName = args.dataExtensionName;
                     responseData = await this.guestService.deleteGuestDataExtension(guestRef, dataExtensionName);
                 }
-                console.log('[Success] Tool executed successfully:', responseData);
+                console.info('[Success] Tool executed successfully:', responseData);
                 return { content: [{ type: 'text', text: JSON.stringify(responseData) }] };
             }
             catch (error) {

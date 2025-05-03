@@ -13,9 +13,10 @@ class CdpGuestService {
         return response.data;
     }
     async retrieveGuests(offset, limit, expand, sort) {
-        const response = await this.client.MakeRequest(
-        //`guests?offset=${offset}&limit=${limit}&expand=${expand}&sort=${sort}`, 
-        `guests?offset=${offset}&limit=${limit}&expand=${expand}`, 'GET', null);
+        if (sort) {
+            sort = `&sort=${sort}`;
+        }
+        const response = await this.client.MakeRequest(`guests?offset=${offset}&limit=${limit}&expand=${expand}${sort}`, 'GET', null);
         return await response.json();
     }
     async retrieveGuest(guestRef) {

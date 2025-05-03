@@ -24,7 +24,7 @@ export const GuestTools = [
     },
     {
         name: "RetrieveGuests",
-        description: "Retrieves guests by their email address or other identifying information.",
+        description: "Retrieves multiple guests by their email address or other identifying information. Each result is a search result list. Offset is a number that determines is how many results to skip. Limit is a number that sets the number of results to retrieve. Expand is a boolean that indicates whether to expand to retrieve guests with all their key-value pairs listed. Sort is a comma separated list of key value pairs which are separated by double colons (prop1::value1,prop2::value2) that indicates how to sort the results. The value in the key value pair is either ASC for ascending or DESC for descending.",
         inputSchema: {
             type: "object",
             properties: {

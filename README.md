@@ -45,8 +45,17 @@ Create a `.env` file in the root directory based on the `.env.example` file to c
 ## MCP Configuration
 
 ```
-"sc-cdp": {
-	"command": "node",
-	"args": ["Path/To/build/CdpServer.js"]
-},
+{
+    "servers": {
+        "sitecore-cdp": {
+            "command": "node",
+            "args": ["Path/To/build/index.js"],
+            "env": {
+               "SITECORE_CDP_ENDPOINT_URL"="https://api-engage-[us|ap|eu|jpe].sitecorecloud.io/'
+               "SITECORE_CDP_CLIENT_KEY"="<client-key>"
+               "SITECORE_CDP_API_TOKEN"="<api-token>"
+            }
+        },
+    }
+}
 ```

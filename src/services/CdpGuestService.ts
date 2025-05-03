@@ -20,9 +20,12 @@ export class CdpGuestService {
 
   async retrieveGuests(offset: number, limit: number, expand: boolean, sort: string): Promise<Models.RetrieveGuestsResponse> 
   { 
+    if(sort){
+      sort = `&sort=${sort}`;
+    }
+
     const response = await this.client.MakeRequest<Models.RetrieveGuestsResponse>(
-      //`guests?offset=${offset}&limit=${limit}&expand=${expand}&sort=${sort}`, 
-      `guests?offset=${offset}&limit=${limit}&expand=${expand}`, 
+      `guests?offset=${offset}&limit=${limit}&expand=${expand}${sort}`, 
       'GET', null);
 
     return await response.json();

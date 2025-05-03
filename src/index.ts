@@ -58,7 +58,7 @@ class CdpServer {
               throw new McpError(ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
             }
             
-            console.log('[Success] Tool started successfully:', request.params.name);
+            console.info('[Success] Tool started successfully:', request.params.name);
 
             var responseData: any = null;
             const args = request.params.arguments as Record<string, string>;
@@ -120,7 +120,7 @@ class CdpServer {
               const dataExtensionName = args.dataExtensionName as string;
               responseData = await this.guestService.deleteGuestDataExtension(guestRef, dataExtensionName);
             }
-            console.log('[Success] Tool executed successfully:', responseData);
+            console.info('[Success] Tool executed successfully:', responseData);
             return { content: [{ type: 'text', text: JSON.stringify(responseData) }] };
           } catch (error: unknown) {
             if (error instanceof Error) {

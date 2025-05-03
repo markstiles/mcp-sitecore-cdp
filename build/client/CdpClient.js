@@ -7,6 +7,7 @@ class CdpClient {
     baseUrl = config_1.config.cdpEndpointUrl;
     constructor() {
         this.headers = new Headers();
+        this.headers.append("Content-Type", "application/json");
         this.headers.append("Authorization", `Basic ${btoa(`${config_1.config.cdpClientKey}:${config_1.config.cdpApiToken}`)}`);
     }
     async MakeRequest(url, method, body) {
@@ -16,12 +17,10 @@ class CdpClient {
                 headers: this.headers,
                 body: body
             });
-            //console.log("Response:");
-            //console.log(response);
             return response;
         }
         catch (error) {
-            console.log(error);
+            console.error(error);
             return { ok: false, error: error || 'Unknown error' };
         }
     }
