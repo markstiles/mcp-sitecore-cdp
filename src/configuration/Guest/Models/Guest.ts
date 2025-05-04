@@ -1,3 +1,5 @@
+import { GuestIdentifier } from './GuestIdentifier';
+
 export interface Guest {
     city?: string;
     country?: string;
@@ -7,6 +9,8 @@ export interface Guest {
     firstName?: string;
     gender?: string;
     guestType: 'visitor' | 'customer' | 'traveller';
+    href?: string;
+    identifiers?: GuestIdentifier[];
     lastName?: string;
     nationality?: string;
     passportExpiry?: string;

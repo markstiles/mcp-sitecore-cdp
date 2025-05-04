@@ -1,15 +1,15 @@
-import { config } from '../config/config';
+import { ServerConfig } from '../ServerConfig';
 
 export class CdpClient {
    
     private headers: any;
-    private baseUrl: string = config.cdpEndpointUrl;
+    private baseUrl: string = ServerConfig.cdpEndpointUrl;
 
     constructor() 
     {  
         this.headers = new Headers();
         this.headers.append("Content-Type", "application/json");
-        this.headers.append("Authorization", `Basic ${btoa(`${config.cdpClientKey}:${config.cdpApiToken}`)}`);
+        this.headers.append("Authorization", `Basic ${btoa(`${ServerConfig.cdpClientKey}:${ServerConfig.cdpApiToken}`)}`);
     }
     
     public async MakeRequest<T>(url: string, method: string, body: any): Promise<any> 

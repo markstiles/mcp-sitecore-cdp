@@ -1,14 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CdpClient = void 0;
-const config_1 = require("../config/config");
+const ServerConfig_1 = require("../ServerConfig");
 class CdpClient {
     headers;
-    baseUrl = config_1.config.cdpEndpointUrl;
+    baseUrl = ServerConfig_1.ServerConfig.cdpEndpointUrl;
     constructor() {
         this.headers = new Headers();
         this.headers.append("Content-Type", "application/json");
-        this.headers.append("Authorization", `Basic ${btoa(`${config_1.config.cdpClientKey}:${config_1.config.cdpApiToken}`)}`);
+        this.headers.append("Authorization", `Basic ${btoa(`${ServerConfig_1.ServerConfig.cdpClientKey}:${ServerConfig_1.ServerConfig.cdpApiToken}`)}`);
     }
     async MakeRequest(url, method, body) {
         try {

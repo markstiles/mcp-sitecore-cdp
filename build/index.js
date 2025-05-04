@@ -1,120 +1,38 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const index_js_1 = require("@modelcontextprotocol/sdk/server/index.js");
+const mcp_js_1 = require("@modelcontextprotocol/sdk/server/mcp.js");
 const stdio_js_1 = require("@modelcontextprotocol/sdk/server/stdio.js");
-const CdpGuestService_1 = require("./services/CdpGuestService");
-const GuestTools_1 = require("./tools/GuestTools");
-const types_js_1 = require("@modelcontextprotocol/sdk/types.js");
+const AudienceExportApi_1 = require("./configuration/AudienceExport/AudienceExportApi");
+const GuestApi_1 = require("./configuration/Guest/GuestApi");
+const OrderApi_1 = require("./configuration/Order/OrderApi");
 class CdpServer {
     server;
-    guestService;
-    actionList;
-    toolsList;
     constructor() {
-        console.error('[Setup] Initializing CDP MCP server...');
-        this.server = new index_js_1.Server({
+        //console.error('[Setup] Initializing CDP MCP server...');
+        this.server = new mcp_js_1.McpServer({
             name: 'mcp-sitecore-cdp',
-            version: '0.1.0',
-        }, {
-            capabilities: {
-                tools: {},
-            },
+            version: "1.0.0",
         });
-        this.server.onerror = (error) => console.error('[Error]', error);
-        this.toolsList = GuestTools_1.GuestTools;
-        this.actionList = GuestTools_1.GuestToolActions;
-        this.guestService = new CdpGuestService_1.CdpGuestService();
-        this.setupListHandler();
-        this.setupCallHandler();
-        process.on('SIGINT', async () => {
-            await this.server.close();
-            process.exit(0);
-        });
-    }
-    setupListHandler() {
-        this.server.setRequestHandler(types_js_1.ListToolsRequestSchema, async () => ({
-            tools: this.toolsList,
-        }));
-    }
-    setupCallHandler() {
-        this.server.setRequestHandler(types_js_1.CallToolRequestSchema, async (request) => {
-            try {
-                if (!this.actionList.includes(request.params.name)) {
-                    throw new types_js_1.McpError(types_js_1.ErrorCode.MethodNotFound, `Unknown tool: ${request.params.name}`);
-                }
-                console.info('[Success] Tool started successfully:', request.params.name);
-                var responseData = null;
-                const args = request.params.arguments;
-                if (request.params.name === 'CreateGuest') {
-                    const guest = args;
-                    responseData = await this.guestService.createGuest(guest);
-                }
-                else if (request.params.name === 'RetrieveGuests') {
-                    //if (!request.params.arguments) {
-                    //  throw new McpError(ErrorCode.InvalidParams, 'Arguments are required for RetrieveGuests.');
-                    //}
-                    // TODO go through each populated argument and add to the query string
-                    const offset = args.offset ? parseInt(args.offset, 10) ?? 0 : 0;
-                    const limit = args.limit ? parseInt(args.limit, 10) ?? 10 : 10;
-                    const expand = args.expand ? (args.expand === 'true') : false;
-                    const sort = args.sort ?? '';
-                    responseData = await this.guestService.retrieveGuests(offset, limit, expand, sort);
-                }
-                else if (request.params.name === 'RetrieveGuest') {
-                    const guestRef = args.guestRef;
-                    const expand = args.expand ? (args.expand === 'true') : false;
-                    responseData = await this.guestService.retrieveGuest(guestRef, expand);
-                }
-                else if (request.params.name === 'UpdateGuest') {
-                    const guestRef = args.guestRef;
-                    const guest = args;
-                    responseData = await this.guestService.updateGuest(guestRef, guest);
-                }
-                else if (request.params.name === 'PartialUpdateGuest') {
-                    const guestRef = args.guestRef;
-                    const guest = args;
-                    responseData = await this.guestService.partialUpdateGuest(guestRef, guest);
-                }
-                else if (request.params.name === 'DeleteGuest') {
-                    const guestRef = args.guestRef;
-                    responseData = await this.guestService.deleteGuest(guestRef);
-                }
-                else if (request.params.name === 'CreateGuestDataExtension') {
-                    const guestRef = args.guestRef;
-                    const extension = JSON.parse(args.extension);
-                    responseData = await this.guestService.createGuestDataExtension(guestRef, extension);
-                }
-                else if (request.params.name === 'RetrieveGuestDataExtensions') {
-                    const guestRef = args.guestRef;
-                    responseData = await this.guestService.retrieveGuestDataExtensions(guestRef);
-                }
-                else if (request.params.name === 'UpdateGuestDataExtension') {
-                    const guestRef = args.guestRef;
-                    const dataExtensionName = args.dataExtensionName;
-                    const extension = JSON.parse(args.extension);
-                    responseData = await this.guestService.updateGuestDataExtension(guestRef, dataExtensionName, extension);
-                }
-                else if (request.params.name === 'DeleteGuestDataExtension') {
-                    const guestRef = args.guestRef;
-                    const dataExtensionName = args.dataExtensionName;
-                    responseData = await this.guestService.deleteGuestDataExtension(guestRef, dataExtensionName);
-                }
-                console.info('[Success] Tool executed successfully:', responseData);
-                return { content: [{ type: 'text', text: JSON.stringify(responseData) }] };
-            }
-            catch (error) {
-                if (error instanceof Error) {
-                    console.error('[Error] Failed to fetch data:', error);
-                    throw new types_js_1.McpError(types_js_1.ErrorCode.InternalError, `Failed to fetch data: ${error.message}`);
-                }
-                throw error;
-            }
-        });
+        // Guest API
+        const guestApi = new GuestApi_1.GuestApi();
+        guestApi.SetupTools(this.server);
+        guestApi.SetupResources(this.server);
+        guestApi.SetupPrompts(this.server);
+        // Order API
+        const orderApi = new OrderApi_1.OrderApi();
+        orderApi.SetupTools(this.server);
+        orderApi.SetupResources(this.server);
+        orderApi.SetupPrompts(this.server);
+        // Audience Export API
+        const audienceExportApi = new AudienceExportApi_1.AudienceExportApi();
+        audienceExportApi.SetupTools(this.server);
+        audienceExportApi.SetupResources(this.server);
+        audienceExportApi.SetupPrompts(this.server);
     }
     async run() {
         const transport = new stdio_js_1.StdioServerTransport();
         await this.server.connect(transport);
-        console.error('CDP MCP server running on stdio');
+        //console.error('CDP MCP server running on stdio');
     }
 }
 const server = new CdpServer();
