@@ -1,4 +1,4 @@
-import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { AudienceExportApi } from "./configuration/AudienceExport/AudienceExportApi";
 import { GuestApi } from "./configuration/Guest/GuestApi";
@@ -8,7 +8,7 @@ class CdpServer {
     private server: McpServer;
     
     constructor() {
-      //console.error('[Setup] Initializing CDP MCP server...');
+      //console.info('[Setup] Initializing CDP MCP server...');
       
       this.server = new McpServer({
         name: 'mcp-sitecore-cdp',
@@ -38,7 +38,7 @@ class CdpServer {
     async run() {
         const transport = new StdioServerTransport();
         await this.server.connect(transport);
-        //console.error('CDP MCP server running on stdio');
+        //console.info('CDP MCP server running on stdio');
     }
 }
 
