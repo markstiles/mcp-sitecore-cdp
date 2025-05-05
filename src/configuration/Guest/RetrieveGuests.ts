@@ -14,7 +14,7 @@ public async AddTool(server: McpServer)
             "Retrieves multiple guests by their email address or other identifying information from Sitecore CDP using the Guest API. Each result is a search result list.",
             //paramsSchema
             {
-                guestType: z.string().describe("The level of identity obtained. Valid values are 'visitor', and 'customer'. A visitor is a guest who has not yet provided any identifying information. A customer is a guest who has identity information like email, name etc."),
+                guestType: z.enum(["visitor", "customer"]).describe("The level of identity obtained. Valid values are 'visitor', and 'customer'. A visitor is a guest who has not yet provided any identifying information. A customer is a guest who has identity information like email, name etc."),
                 city: z.string().nullable().describe("The guest's city."),
                 country: z.string().nullable().describe("The guest's country."),
                 dateOfBirth: z.date().nullable().describe("The guest's date of birth. Validation: Date must be in the past. Example: 1991-01-01T16:17:16.000Z"),
