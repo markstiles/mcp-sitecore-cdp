@@ -13,7 +13,7 @@ export class RetrieveGuest
             "Retrieves the full guest record of a guest, including any guest data extensions from Sitecore CDP using the Guest API",
             //paramsSchema
             {
-                guestRef: z.string().describe("The guest reference. This is a unique identifier of the guest record. If you don't know the guest reference, first retrieve guests. Example: f7aabbca-1c1b-4fc2-be72-3e16294a4f03"),
+                guestRef: z.string().uuid().describe("The guest reference. This is a unique identifier of the guest record. If you don't know the guest reference, first retrieve guests. Example: f7aabbca-1c1b-4fc2-be72-3e16294a4f03"),
                 expand: z.boolean().nullable().describe("You can expand items in a collection by setting expand=true. This eliminates the need to send multiple follow-up requests (one for the collection and another for each of its items). This also helps you check if the data you intend to create already exists. Default ''. Example: expand=true"),
             },
             //annotations
@@ -28,7 +28,7 @@ export class RetrieveGuest
             async ({ guestRef, expand }) => 
             {   
                 const query = new URLSearchParams({expand: String(expand)}).toString();
-                const response = await new CdpClient().MakeRequest<Models.GuestCreateResponse>(
+                const response = await new CdpClient().MakeRequest<Models.GuestResponse>(
                     `guests/${guestRef}?${query}`,
                     'GET',
                     null);

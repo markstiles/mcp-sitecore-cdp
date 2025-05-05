@@ -3,6 +3,7 @@ import { CreateGuest } from "./CreateGuest";
 import { CreateGuestDataExtension } from "./CreateGuestDataExtension"; 
 import { DeleteGuest } from "./DeleteGuest"; 
 import { DeleteGuestDataExtension } from "./DeleteGuestDataExtension"; 
+import { DeleteGuestDataExtensionFields } from "./DeleteGuestDataExtensionFields"; 
 import { PartialUpdateGuest } from "./PartialUpdateGuest"; 
 import { RetrieveGuest } from "./RetrieveGuest"; 
 import { RetrieveGuestDataExtensions } from "./RetrieveGuestDataExtensions";
@@ -20,6 +21,7 @@ export class GuestApi
         new CreateGuestDataExtension().AddTool(server);
         new DeleteGuest().AddTool(server);
         new DeleteGuestDataExtension().AddTool(server);
+        new DeleteGuestDataExtensionFields().AddTool(server);        
         new PartialUpdateGuest().AddTool(server);
         new RetrieveGuest().AddTool(server);    
         new RetrieveGuestDataExtensions().AddTool(server);

@@ -1,6 +1,5 @@
 import { McpServer, ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { CdpClient } from '../../client/CdpClient';
-import * as Models from './Models';
 import { z } from "zod";
 
 export class DeleteGuestDataExtension 
@@ -13,8 +12,8 @@ export class DeleteGuestDataExtension
             "Deletes a specific guest data extension in Sitecore CDP using the Guest API.",
             //paramsSchema
             {
-                guestRef: z.string().describe("The guest reference. This is a unique identifier of the guest record. If you don't know the guest reference, first retrieve guests. Example: f7aabbca-1c1b-4fc2-be72-3e16294a4f03"),
-                dataExtensionName: z.string().describe("The name of the data extension. Expected values are 'ext', 'ext1', 'ext2', 'ext3', 'ext4', or 'ext5'. Example: ext1"),
+                guestRef: z.string().uuid().describe("The guest reference. This is a unique identifier of the guest record. If you don't know the guest reference, first retrieve guests. Example: f7aabbca-1c1b-4fc2-be72-3e16294a4f03"),
+                dataExtensionName: z.enum(['ext', 'ext1', 'ext2', 'ext3', 'ext4', 'ext5']).describe("The name of the data extension. Expected values are 'ext', 'ext1', 'ext2', 'ext3', 'ext4', or 'ext5'. Example: ext1"),
             },
             //annotations
             {
