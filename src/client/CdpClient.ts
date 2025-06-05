@@ -15,7 +15,18 @@ export class CdpClient {
     public async MakeRequest<T>(url: string, method: string, body: any): Promise<any> 
     {       
         try {
-            const response = await fetch(this.baseUrl + url, {
+            var version = "";
+            if (url.startsWith('audience')) {
+                version = ServerConfig.audienceExportApiVersion;
+            }
+            else if (url.startsWith('orders')) {
+                version = ServerConfig.orderApiVersion;
+            }
+            else if (url.startsWith('guests')) {
+                version = ServerConfig.guestApiVersion;
+            }
+
+            const response = await fetch(this.baseUrl + version + "/" + url, {
               method: method,
               headers: this.headers,
               body: body
